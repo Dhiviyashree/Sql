@@ -1,0 +1,101 @@
+use assignment;
+
+DELIMITER //
+create procedure order_status(In order_year int, in order_month int)
+
+begin 
+select ordernumber,
+       orderdate,
+       status
+       from orders where year (orderdate)=order_year and month (orderdate) = order_month;
+       end//
+DELIMITER ;
+
+call order_status ( 2003,4);
+call order_status ( 2006,5);
+call order_status (2002,7);
+call order_status (2004,11);
+
+DELIMITER //
+create procedure cancelled_order( )
+  begin
+    create table  cancellation (
+             id int primary key auto_increment,
+             customerNumber int,
+             orderNumber int,
+             comments text,
+             foreign key (customerNumber) references customers (customerNumber)
+	     on delete cascade,
+             foreign key  (orderNumber) references orders(orderNumber)
+         on delete cascade
+       );
+       insert into cancellation ( customerNumber, orderNumber, comments)
+                         select  customerNumber, orderNumber, comments
+                  from orders where  status = 'Cancelled';
+       select  * from  cancellation;
+    END //
+DELIMITER ; 
+
+call cancelled_order();
+
+select * ,
+     case
+     when amount < 25000 then 'silver'
+     when amount between 25000 and 50000 then 'gold'
+     else 'platium'
+     end as Status
+     from payments;
+     
+     DELIMITER //
+     create procedure customer_status( cust_no int )
+     begin 
+     select case 
+     when amount < 25000 then 'silver'
+     when amount between 25000 and 50000 then 'gold'
+     else 'platium'
+     end as Status
+     from payments where customernumber = cust_no;
+     end//
+     DELIMITER ;
+     
+     call customer_status (103);
+	 call customer_status (121);
+	 call customer_status (129);
+     
+     select * from payments; 
+     
+	select customerNumber, customerName,  status
+       from customers 
+    left join orders  using (customerNumber); 
+    
+DELIMITER //
+create trigger delete_cascade
+after delete on  movies
+for each row
+begin
+    update rentals 
+    set movieid = id
+    where movieid = old.id ;
+end ;
+DELIMITER ;
+
+DELIMITER //
+create trigger update_cascade
+after delete on movies 
+for each row 
+begin
+    delete from rentals
+    where movieid
+    not in (select distinct id from movies);
+    end;
+    DELIMITER ;
+    
+select * from employee
+order by salary desc
+limit 2,1;
+    
+ select *, dense_rank () 
+ OVER (order by salary desc)
+ as Rank_salary
+  from employee;   
+    
