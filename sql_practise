@@ -1,0 +1,91 @@
+use assignment;
+
+select * from employee where deptno = 10 and salary>3000;
+
+select *, CASE
+      WHEN marks BETWEEN 40 AND 49.99 THEN 'Second Class'
+            WHEN marks BETWEEN 50 AND 59.99 THEN 'First Class'
+            WHEN marks BETWEEN 60 AND 79.99 THEN 'First Class'
+            WHEN marks BETWEEN 80 AND 100 THEN 'Distinction'
+            ELSE 'Failed'
+    END as Grade        
+  from students;
+  
+  select * from students;
+  
+  select count(*) from students;
+  
+  ALTER TABLE students ADD COLUMN Grade varchar(30) after marks;
+  
+  SET SQL_SAFE_UPDATES = 0;
+  
+update students set Grade = 
+						case
+                        WHEN marks BETWEEN 40 AND 49.99 THEN 'Second Class'
+						WHEN marks BETWEEN 50 AND 59.99 THEN 'First Class'
+                        WHEN marks BETWEEN 60 AND 79.99 THEN 'First Class'
+						WHEN marks BETWEEN 80 AND 100 THEN 'Distinction'
+                        ELSE 'Failed'
+                        end;
+                        
+     ---How many students have graduated with first class----
+     
+  select count(Grade) from students where Grade = 'first class';
+  
+  -----How many students have obtained distinction?----
+  
+select count(Grade) from students where Grade = 'Distinction';
+
+ select distinct city from station where id % 2 = 0 ;
+ 
+ select city,id from station group by city having id % 2 = 0;
+
+select *, count(id) from station group by city having id % 2 = 0 ;
+
+  select count(city) from station;
+  
+  select count(distinct city ) from station;
+  
+  select count(city)-count(distinct city) as 'difference' from station;
+  
+  ---5a--
+  select distinct city from station where city regexp '^[AEOIU]' group by city  order by city;
+
+----5b----
+select city from station where city regexp '^a|^e|^i|^o|^u' and city regexp 'a$|e$|i$|o$|u$'  group by  city order by city;  
+  
+  ----5c---
+  select city from station where city not  regexp '^[AEIOU]' group by city order by city;
+  
+  ---5d---
+  select city from station where city not  regexp '^a|^e|^i|^o|^u' 
+      and city not  regexp 'a$|e$|i$|o$|u$'  group by  city order by city;  
+  
+  
+select Concat(first_name, ' ', last_name) as Employee, Concat(salary, '$') as 'Salary($)',
+	  hire_date,
+      timestampdiff(MONTH, hire_date, current_date()) as 'Total_Months_Joined'
+      from emp
+	  where salary > 2000
+      having Total_Months_Joined < 36
+	  order by salary desc;
+      
+ select deptno, sum(salary) as Total_salary
+  from employee group by deptno; 
+  
+  select * from city;
+  
+  select * from city where population > 100000 order by population desc;
+  
+ select * , sum(population) as total_population from city where district = 'california'group by district;
+
+select * , avg(population) as average_population from city group by district;
+
+select * from orders;
+select * from customers;
+
+select ordernumber, status, customernumber, customername, comments
+  from customers  join orders 
+      using (customernumber) where status = 'Disputed'; 
+      
+      
